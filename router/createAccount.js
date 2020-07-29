@@ -47,198 +47,182 @@ router.post("/", sessionChecker, async (req, res) => {
   let accountNumber;
   let db = mongoUtil.getDb();
   let { accountType } = req.body;
-  fs.readFile("./user.json", "utf8", (err, jsonString) => {
-    if (err) {
-      console.log("File read failed:", err);
-      return;
-    }
-    let userData = JSON.parse(jsonString);
-    currentUser = userData.filter(
-      (user) => user.username == req.mySession.username
-    );
-    if (accountType == "chequing") {
-      if (
-        currentUser[0].chequingAccount != undefined ||
-        "chequingAccount" in currentUser[0]
-      ) {
-        let data = {
-          msg: `Account type ${req.body.accountType} already exist`,
-          username: req.mySession.username,
-          accountNumbers: accountNumbers,
-        };
-        if (isDisable == true) data["isDisable"] = "disabled";
-        res.render("home", data);
-      } else {
-        fs.readFile("./accounts.json", "utf8", (err, jsonString) => {
-          if (err) {
-            console.log("File read failed:", err);
-            return;
-          }
 
-          accountsData = JSON.parse(jsonString);
-          // let strLength = accountsData.length;
-          let numZero = "";
-          let accountNumber;
-          totalAccounts = Object.keys(accountsData).length;
-          str = totalAccounts.toString();
-          str.length < 7
-            ? (numZero = "0".repeat(7 - str.length))
-            : (numZero = numZero);
-          accountNumber = numZero.concat(totalAccounts);
-          accountsData[accountNumber] = {
-            accountType: req.body.accountType,
-            accountBalance: 0,
+      if (accountType == "chequing") {
+        if (userInfo.chequing != undefined || "chequing" in userInfo) {
+          let data = {
+            msg: `Account type ${req.body.accountType} already exist`,
+            username: req.mySession.username,
+            accountNumbers: accountNumbers,
           };
-          accountsData.lastID = accountNumber;
-          currentUser[0].chequingAccount = accountNumber;
+          if (isDisable == true) data["isDisable"] = "disabled";
+          res.render("home", data);
+        } else {
+          fs.readFile("./accounts.json", "utf8", (err, jsonString) => {
+            if (err) {
+              console.log("File read failed:", err);
+              return;
+            }
 
-          db.collection("client")
-            .findOne({ username: currentUser[0].username })
-            .then((client) => {
-              if (client == null) {
-                let client = {
-                  username: currentUser[0].username,
-                  chequing: accountNumber,
-                };
-                return db.collection("client").insertOne(client);
-              } else {
-                let chequingAccount = { chequing: accountNumber };
-                return db
-                  .collection("client")
-                  .updateOne(
-                    { username: currentUser[0].username },
-                    { $set: chequingAccount }
-                  );
-              }
-            })
-            .then((result) => {
-              return userAccount.getUserAccount(req.mySession.username);
-            })
-            .then((userInfo) => {
-              let accountNumbers = [];
-              if (userInfo.chequing != undefined)
-                accountNumbers.push(userInfo.chequing);
-              if (userInfo.savings != undefined)
-                accountNumbers.push(userInfo.savings);
+            accountsData = JSON.parse(jsonString);
+            // let strLength = accountsData.length;
+            let numZero = "";
+            let accountNumber;
+            totalAccounts = Object.keys(accountsData).length;
+            str = totalAccounts.toString();
+            str.length < 7
+              ? (numZero = "0".repeat(7 - str.length))
+              : (numZero = numZero);
+            accountNumber = numZero.concat(totalAccounts);
+            accountsData[accountNumber] = {
+              accountType: req.body.accountType,
+              accountBalance: 0,
+            };
+            accountsData.lastID = accountNumber;
+            userInfo.chequingAccount = accountNumber;
 
-              fs.writeFile(
-                "./accounts.json",
-                JSON.stringify(accountsData),
-                (err) => {
-                  if (err) console.log("Error writing file:", err);
+            db.collection("client")
+              .findOne({ username: userInfo.username })
+              .then((client) => {
+                if (client == null) {
+                  let client = {
+                    username: userInfo.username,
+                    chequing: accountNumber,
+                  };
+                  return db.collection("client").insertOne(client);
+                } else {
+                  let chequingAccount = { chequing: accountNumber };
+                  return db
+                    .collection("client")
+                    .updateOne(
+                      { username: userInfo.username },
+                      { $set: chequingAccount }
+                    );
                 }
-              );
-              fs.writeFile("./user.json", JSON.stringify(userData), (err) => {
-                if (err) console.log("Error writing file:", err);
+              })
+              .then((result) => {
+                return userAccount.getUserAccount(req.mySession.username);
+              })
+              .then((userInfo) => {
+                let accountNumbers = [];
+                if (userInfo.chequing != undefined)
+                  accountNumbers.push(userInfo.chequing);
+                if (userInfo.savings != undefined)
+                  accountNumbers.push(userInfo.savings);
+
+                fs.writeFile(
+                  "./accounts.json",
+                  JSON.stringify(accountsData),
+                  (err) => {
+                    if (err) console.log("Error writing file:", err);
+                  }
+                );
+
+                let data = {
+                  msg: `Account type ${req.body.accountType} with account number ${accountNumber} is created`,
+                  username: req.mySession.username,
+                  accountNumbers: accountNumbers,
+                };
+                let isDisable =
+                  userInfo.hasOwnProperty("chequing") &&
+                  userInfo.hasOwnProperty("savings");
+
+                if (isDisable == true) data["isDisable"] = "disabled";
+                res.render("home", data);
               });
-              let data = {
-                msg: `Account type ${req.body.accountType} with account number ${accountNumber} is created`,
-                username: req.mySession.username,
-                accountNumbers: accountNumbers,
-              };
-              let isDisable =
-                userInfo.hasOwnProperty("chequing") &&
-                userInfo.hasOwnProperty("savings");
-
-              if (isDisable == true) data["isDisable"] = "disabled";
-              res.render("home", data);
-            });
-        });
-      }
-    } else {
-      if (
-        currentUser[0].savingAccount != undefined ||
-        "savingAccount" in currentUser[0]
-      ) {
-        let data = {
-          msg: `Account type ${req.body.accountType} already exist`,
-          username: req.mySession.username,
-          accountNumbers: accountNumbers,
-        };
-        let isDisable =
-          userInfo.hasOwnProperty("chequing") &&
-          userInfo.hasOwnProperty("savings");
-
-        if (isDisable == true) data["isDisable"] = "disabled";
-        res.render("home", data);
+          });
+        }
       } else {
-        fs.readFile("./accounts.json", "utf8", (err, jsonString) => {
-          if (err) {
-            console.log("File read failed:", err);
-            return;
-          }
-
-          accountsData = JSON.parse(jsonString);
-          // let strLength = accountsData.length;
-          let numZero = "";
-          let accountNumber;
-          totalAccounts = Object.keys(accountsData).length;
-          str = totalAccounts.toString();
-          str.length < 7
-            ? (numZero = "0".repeat(7 - str.length))
-            : (numZero = numZero);
-          accountNumber = numZero.concat(totalAccounts);
-          accountsData[accountNumber] = {
-            accountType: req.body.accountType,
-            accountBalance: 0,
+        if (
+          userInfo.savings != undefined ||
+          "savings" in userInfo
+        ) {
+          let data = {
+            msg: `Account type ${req.body.accountType} already exist`,
+            username: req.mySession.username,
+            accountNumbers: accountNumbers,
           };
-          accountsData.lastID = accountNumber;
-          currentUser[0].savingAccount = accountNumber;
-          db.collection("client")
-            .findOne({ username: currentUser[0].username })
-            .then((client) => {
-              if (client == null) {
-                let client = {
-                  username: currentUser[0].username,
-                  savings: accountNumber,
-                };
-                return db.collection("client").insertOne(client);
-              } else {
-                let savingsAccount = { savings: accountNumber };
-                return db
-                  .collection("client")
-                  .updateOne(
-                    { username: currentUser[0].username },
-                    { $set: savingsAccount }
-                  );
-              }
-            })
-            .then((result) => {
-              return userAccount.getUserAccount(req.mySession.username);
-            })
-            .then((userInfo) => {
-              let accountNumbers = [];
+          let isDisable =
+            userInfo.hasOwnProperty("chequing") &&
+            userInfo.hasOwnProperty("savings");
 
-              if (userInfo.chequing != undefined)
-                accountNumbers.push(userInfo.chequing);
-              if (userInfo.savings != undefined)
-                accountNumbers.push(userInfo.savings);
-              fs.writeFile(
-                "./accounts.json",
-                JSON.stringify(accountsData),
-                (err) => {
-                  if (err) console.log("Error writing file:", err);
+          if (isDisable == true) data["isDisable"] = "disabled";
+          res.render("home", data);
+        } else {
+          fs.readFile("./accounts.json", "utf8", (err, jsonString) => {
+            if (err) {
+              console.log("File read failed:", err);
+              return;
+            }
+
+            accountsData = JSON.parse(jsonString);
+            // let strLength = accountsData.length;
+            let numZero = "";
+            let accountNumber;
+            totalAccounts = Object.keys(accountsData).length;
+            str = totalAccounts.toString();
+            str.length < 7
+              ? (numZero = "0".repeat(7 - str.length))
+              : (numZero = numZero);
+            accountNumber = numZero.concat(totalAccounts);
+            accountsData[accountNumber] = {
+              accountType: req.body.accountType,
+              accountBalance: 0,
+            };
+            accountsData.lastID = accountNumber;
+            userInfo.savings = accountNumber;
+            db.collection("client")
+              .findOne({ username: userInfo.username })
+              .then((client) => {
+                if (client == null) {
+                  let client = {
+                    username: userInfo.username,
+                    savings: accountNumber,
+                  };
+                  return db.collection("client").insertOne(client);
+                } else {
+                  let savingsAccount = { savings: accountNumber };
+                  return db
+                    .collection("client")
+                    .updateOne(
+                      { username: userInfo.username },
+                      { $set: savingsAccount }
+                    );
                 }
-              );
-              fs.writeFile("./user.json", JSON.stringify(userData), (err) => {
-                if (err) console.log("Error writing file:", err);
-              });
-              let isDisable =
-                userInfo.hasOwnProperty("chequing") &&
-                userInfo.hasOwnProperty("savings");
+              })
+              .then((result) => {
+                return userAccount.getUserAccount(req.mySession.username);
+              })
+              .then((userInfo) => {
+                let accountNumbers = [];
 
-              let data = {
-                msg: `Account type ${req.body.accountType} with account number ${accountNumber} is created`,
-                username: req.mySession.username,
-                accountNumbers: accountNumbers,
-              };
-              if (isDisable == true) data["isDisable"] = "disabled";
-              res.render("home", data);
-            });
-        });
+                if (userInfo.chequing != undefined)
+                  accountNumbers.push(userInfo.chequing);
+                if (userInfo.savings != undefined)
+                  accountNumbers.push(userInfo.savings);
+                fs.writeFile(
+                  "./accounts.json",
+                  JSON.stringify(accountsData),
+                  (err) => {
+                    if (err) console.log("Error writing file:", err);
+                  }
+                );
+               
+                let isDisable =
+                  userInfo.hasOwnProperty("chequing") &&
+                  userInfo.hasOwnProperty("savings");
+
+                let data = {
+                  msg: `Account type ${req.body.accountType} with account number ${accountNumber} is created`,
+                  username: req.mySession.username,
+                  accountNumbers: accountNumbers,
+                };
+                if (isDisable == true) data["isDisable"] = "disabled";
+                res.render("home", data);
+              });
+          });
+        }
       }
-    }
-  });
 });
 
 module.exports = router;

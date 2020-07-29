@@ -10,30 +10,30 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  fs.readFile("user.json", (err, data) => {
-    if (err) throw err;
-    let users = JSON.parse(data);
-    let count = 0;
-    for (key in users) {
-      if (req.body.username == users[key].username) {
-        if (req.body.password == users[key].password) {
-          req.mySession.username = req.body.username;
-          return res.json({
-            statusCode: 1,
-            msg: "Login Success",
-            username: req.body.username,
-          });
-        } else {
-          return res.json({ statusCode: 0, msg: "Invalid password" });
-        }
-      } else {
-        if (count == Object.keys(users).length - 1) {
-          return res.json({ statusCode: 0, msg: "Not a registered username" });
-        }
-      }
-      count++;
-    }
-  });
+ fs.readFile("user.json", (err, data) => {
+   if (err) throw err;
+   let users = JSON.parse(data);
+   let count = 0;
+   for (key in users) {
+     if (req.body.username == key) {
+       if (req.body.password == users[key]) {
+        req.mySession.username = req.body.username;
+         return res.json({
+           statusCode: 1,
+           msg: "Login Success",
+           username: req.body.username,
+         });
+       } else {
+         return res.json({ statusCode: 0, msg: "Invalid password" });
+       }
+     } else {
+       if (count == Object.keys(users).length - 1) {
+         return res.json({ statusCode: 0, msg: "Not a registered username" });
+       }
+     }
+     count++;
+   }
+ });
 });
 
 module.exports = router;

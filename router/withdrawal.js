@@ -4,6 +4,7 @@ let path = require("path");
 let fs = require("fs");
 const userAccount = require("../lib/userAccount");
 var mongoUtil = require("../db/mongoUtil.js");
+const roundOf = require("../lib/roundOf");
 
 // middleware function to check for logged-in users
 var sessionChecker = (req, res, next) => {
@@ -80,9 +81,10 @@ router.post("/", sessionChecker, (req, res) => {
             });
             return;
           }
-          accountInfo.accountBalance =
+          accountInfo.accountBalance = roundOf.roundToTwo(
             parseFloat(accountInfo.accountBalance) -
-            parseFloat(withdrawalAmount);
+              parseFloat(withdrawalAmount)
+          );
         }
       }
     }
