@@ -1,0 +1,15 @@
+<nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+    <a class="navbar-brand" href="/home">WebBank</a>
+    <div class="navbar-collapse" id="collapsibleNavbar">
+                <ul class="navbar-nav ml-auto">
+                     {{# if username}}
+                <li class="nav-item" onmouseenter="showLogout()"  onmouseleave="hideLogout()">
+                <a class="nav-link" href="/logout" id="userDisplayName" ></a>
+                <div  class="bg-primary text-light"   id="logout-btn"  >
+                   <a class="btn btn-primary btn-sm ml-auto"  href="/logout">Logout</a>
+                   
+                </div>
+                {{/if}}
+                </ul>
+    </div>
+</nav>

@@ -1,0 +1,105 @@
+<div class="container-fluid">
+    <form class="form-signin"  name="homeForm"   action="/home" method="POST">
+        <div class="row justify-content-sm-center">
+            <div class="col-sm-8 col-md-10 my-auto p-0">
+                <div class="col-md-6 mx-auto">
+                    <div class="card border-info text-center">
+                        <div class="card-body">
+                            {{!-- <h4 class="text-center">Hey {{username}}</h4> --}}
+                            <br />
+                            <img src="/bank.jpg" alt="" width="200px" />
+                            <br />
+                            <button  id="submitButton" class="btn btn-lg btn-primary btn-block mb-2 mt-3" type="submit">
+                                Submit
+                            </button>
+
+                            <br />
+                       <div class="container">
+{{# if balance}}
+                           <div class="container mt-5 mb-5">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Balance</h5>
+                                    {{!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> --}}
+                                    <p class="card-text">Account Number: {{accountNumber}} </p>
+                                    <p class="card-text">Account Type: {{accountInfo.accountType}} </p>
+                                    <p class="card-text">Account Balance: {{accountInfo.accountBalance}} </p>
+                                </div>
+                            </div>
+                        </div>
+
+{{/ if}}
+
+      {{#if msg}}
+            <div class="alert alert-success mt-2 mb-3" role="alert">
+                     {{msg}}
+                   </div>
+        {{/if}}
+
+    
+
+</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-md-2 p-0">
+                <div class="right-sidebar">
+                    <ul class="navbar-nav">
+                        <li>
+                            {{!-- <div class="form-check">
+                            <input type="number" class="form-control mb-2" placeholder="Account Number"
+                            name="accountNumber"  min="0"
+                                id="account-number"  autofocus />
+                            </div> --}}
+                             <div class="text-center">
+                        <select name="accountNumber" id="company" class="form-control mb-2">
+                            {{#each accountNumbers}}
+                            <option>{{this}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                        </li>
+                        <li>
+                            <div class="form-check">
+                                <input class="form-check-input" required type="radio" name="serviceType" id="balance"
+                                    value="balance" />
+                                <label class="form-check-label" for="balance">
+                                    Balance
+                                </label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="form-check">
+                                <input class="form-check-input" required type="radio" name="serviceType" id="deposit"
+                                    value="deposit" />
+                                <label class="form-check-label" for="deposit">
+                                    Deposit
+                                </label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="form-check">
+                                <input class="form-check-input" required type="radio" name="serviceType" id="openAccount"
+                                    value="openAccount" {{isDisable}} />
+                                <label class="form-check-label" for="openAccount" >
+                                    Open an account
+                                </label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="form-check">
+                                <input class="form-check-input" required type="radio" name="serviceType" id="withdrawal"
+                                    value="withdrawal" />
+                                <label class="form-check-label" for="withdrawal">
+                                    Withdrawal
+                                </label>
+                            </div>
+                        </li>
+                    </ul>
+                    <!-- </form> -->
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
