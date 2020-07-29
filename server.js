@@ -5,7 +5,7 @@ let bodyParser = require("body-parser");
 let fs = require("fs");
 //Creates our express server
 const app = express();
-const port = 3000;
+const port = 3000 ||  process.env.PORT;
 const userAccount = require("./lib/userAccount");
 //Loads the handlebars module
 const exphbs = require("express-handlebars");
@@ -53,7 +53,7 @@ mongoUtil.connectToServer(function (err, client) {
 //Sets a basic route
 app.get("/", (req, res) => {
   res.redirect("/login");
-});
+}); 
 
 
 app.get("/unauthorised", (req, res) => {
