@@ -84,6 +84,9 @@ app.use("/logout", logout);
 const balance = require("./router/balance");
 app.use("/balance", balance)
 
+const register = require("./router/register");
+app.use("/register", register)
+
 
 //Makes the app listen to port 3000
 app.listen(port, () => console.log(`App listening to port ${port}`));

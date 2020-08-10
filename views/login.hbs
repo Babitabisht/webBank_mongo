@@ -5,18 +5,22 @@
         <div class="card-body">
           <h4 class="text-center">Webbank</h4>
           <br />
-          <form class="form-signin" id="loginForm">
-            <input type="text" class="form-control mb-2" placeholder="username" id="username" required autofocus>
-            <input type="password" class="form-control mb-2" placeholder="Password" id="password" required>
+          <form class="form-signin" id="loginForm" action="login" method="POST">
+            <input type="text" class="form-control mb-2" name="username" placeholder="username" id="username" required autofocus>
+            <input type="password" class="form-control mb-2" name="password" placeholder="Password" id="password" required>
             <br />
             <div class="alert alert-danger alert-dismissible" id="login-error">
               <button type="button" class="close" data-dismiss="alert">&times;</button>
               <span id="error-msg"></span>
             </div>
-            <button class="btn btn-lg btn-primary btn-block mb-1" type="button" onclick="login()">Sign in</button>
+            <button class="btn btn-lg btn-primary btn-block mb-1" type="submit" onclick="login()">Sign in</button>
             <p>Don't have account! <a href="/register">Sign Up</a></p>
           </form>
-
+        {{#if msg}}
+            <div class="alert alert-success mt-2 mb-3" role="alert">
+                     {{msg}}
+                   </div>
+        {{/if}}
         </div>
       </div>
     </div>
@@ -28,7 +32,7 @@
     let username = document.getElementById('username').value;
     let password = document.getElementById('password').value;
     postData('login', { username: username, password: password }).then(res => {
-      if (!res.statusCode) {
+      if (!res.statusCode) { 
         let errorDiv = document.getElementById('login-error');
         errorDiv.style.display = 'block';
         document.getElementById('error-msg').innerHTML = res.msg;

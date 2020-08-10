@@ -4,7 +4,7 @@
                 <ul class="navbar-nav ml-auto">
                      {{# if username}}
                 <li class="nav-item" onmouseenter="showLogout()"  onmouseleave="hideLogout()">
-                <a class="nav-link" href="/logout" id="userDisplayName" ></a>
+                <a class="nav-link" href="/logout" id="userDisplayName" >{{username}} </a>
                 <div  class="bg-primary text-light"   id="logout-btn"  >
                    <a class="btn btn-primary btn-sm ml-auto"  href="/logout">Logout</a>
                    

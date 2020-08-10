@@ -5,19 +5,28 @@
         <div class="card-body">
           <h4 class="text-center">Webbank</h4>
           <br />
-          <form class="form-signin" id="loginForm">
-            <input type="text" class="form-control mb-2" placeholder="Email" id="username" required autofocus>
-            <input type="password" class="form-control mb-2" placeholder="Password" id="password" required>
-            <input type="password" class="form-control mb-2" placeholder="Confirm Password" id="cpassword" required>
+          <form class="form-signin"  method="POST" action="/register" id="loginForm">
+             <input type="text" class="form-control mb-2" placeholder="First Name" name="firstName" required autofocus>
+              <input type="text" class="form-control mb-2" placeholder="Last Name" name="lastName" required autofocus>
+               <input type="text" class="form-control mb-2" placeholder="Username" name="username" required autofocus>
+            <input type="email" class="form-control mb-2" placeholder="Email" name="email" required autofocus>
+            <input type="password" class="form-control mb-2" placeholder="Password" name="password" required>
+            <input type="password" class="form-control mb-2" placeholder="Confirm Password" name="cpassword" required>
             <br />
             <div class="alert alert-danger alert-dismissible" id="login-error">
               <button type="button" class="close" data-dismiss="alert">&times;</button>
               <span id="error-msg"></span>
             </div>
-            <button class="btn btn-lg btn-primary btn-block mb-1" type="button" onclick="login()">Register</button>
+            
+            <button class="btn btn-lg btn-primary btn-block mb-1" type="submit">Register</button>
+
             <p>Already have account! <a href="/login">Sign In</a></p>
           </form>
-
+  {{#if msg}}
+            <div class="alert alert-danger mt-2 mb-3" role="alert">
+                     {{msg}}
+                   </div>
+        {{/if}}
         </div>
       </div>
     </div>
