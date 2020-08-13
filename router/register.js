@@ -18,7 +18,7 @@ router.post("/", (req, res) => {
   if (password != cpassword) {
     res.render("register", { msg: "password mismatched" });
   } else {
-    db.collection("client2")
+    db.collection("user")
       .findOne({ email: email })
       .then((result) => {
         return result;
@@ -31,7 +31,7 @@ router.post("/", (req, res) => {
         }
       })
       .then(() => {
-        return db.collection("client2").findOne({ username: username });
+        return db.collection("user").findOne({ username: username });
       })
       .then((alreadyRegisteredUsername) => {
         if (alreadyRegisteredUsername != null) {
@@ -41,7 +41,7 @@ router.post("/", (req, res) => {
         }
       })
       .then(() => {
-        return db.collection("client2").insertOne(client);
+        return db.collection("user").insertOne(client);
       })
       .then((result) => {
        
